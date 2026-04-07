@@ -21,6 +21,7 @@ public class SepoliaConnection
     {
 
         Web3ClientVersion clientVersion = web3.web3ClientVersion().send();
+        System.out.println("Client Version: " + clientVersion.getWeb3ClientVersion());
         return clientVersion.getWeb3ClientVersion();
     }
 
@@ -28,7 +29,7 @@ public class SepoliaConnection
     {
 
         EthBlockNumber blockNumber = web3.ethBlockNumber().send();
-        System.out.println("Latest block: " + blockNumber.getBlockNumber());
+        System.out.println("Latest Block: " + blockNumber.getBlockNumber());
         return blockNumber.getBlockNumber().toString();
     }
 }
