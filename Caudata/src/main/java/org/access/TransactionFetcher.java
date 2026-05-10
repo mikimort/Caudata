@@ -46,9 +46,8 @@ public class TransactionFetcher
                     BigInteger gasUsed = txObj.getGas();
 
                     allTransactions.add(new TransactionData(txObj.getHash(), txObj.getFrom(), txObj.getTo(), txObj.getValue(), gasUsed));
-
-                    Thread.sleep(150);
                 }
+                Thread.sleep(150);
             }
             catch(IOException e)
             {
