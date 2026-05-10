@@ -15,7 +15,7 @@ import static java.lang.Thread.sleep;
 public class BlockFetcher
 {
     private final Web3j web3j;
-
+    private final static int DELAY_MS = 1000;
     public BlockFetcher(Web3j web3j)
     {
         this.web3j = web3j;
@@ -54,6 +54,36 @@ public class BlockFetcher
     public EthBlock.Block fetchBlockWithTransactions(BigInteger blockNumber) throws IOException
     {
         return web3j.ethGetBlockByNumber(DefaultBlockParameter.valueOf(blockNumber), true).send().getBlock();
+    }
+
+    public BigInteger getLatestBlockNumber() throws IOException
+    {
+        return web3j.ethBlockNumber().send().getBlockNumber();
+    }
+
+    public List<BlockData> fetchBlockRange(BigInteger from, BigInteger to)
+    {
+        List<BlockData> result = new ArrayList<>();
+        for(BigInteger num = from; num.compareTo(to) <= 0; num.add(BigInteger.ONE))
+        {
+            try
+            {
+                EthBlock.Block block = web3j.ethGetBlockByNumber(DefaultBlockParameter.valueOf(num), false).send().getBlock();
+
+                if(block != null)
+                {
+                    result.add(new BlockData(block.getNumber(), block.getHash(), block.getTransactions().size()));
+                }
+
+                sleep(DELAY_MS);
+            }
+            catch (IOException e)
+            {
+                System.err.printf("Błąd pobierania bloku #%s: %s%n", num, e.getMessage());
+            }
+        }
+
+        return result;
     }
 
     private void sleep(long ms)

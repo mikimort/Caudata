@@ -1,6 +1,7 @@
 package org.main;
 
 import org.access.BlockFetcher;
+import org.access.BlockPoller;
 import org.access.TransactionFetcher;
 import org.dataManage.DataAggregator;
 import org.dataManage.DataFilter;
@@ -54,5 +55,13 @@ public class Main
         System.out.printf("Śr. tx / blok:           %.2f%n", aggregator.averageTxPerBlock(blocks));
         System.out.printf("Łączna wartość (ETH):    %.4f%n", aggregator.totalValueEth(transactions));
         System.out.printf("Śr. żużycie gazu:        %s%n", aggregator.averageGasUsed(transactions));
+
+        System.out.println("### Uruchamianie pollingu ###");
+        BlockPoller poller = new BlockPoller(blockFetcher, 12);
+
+        //Ctrl+C zatrzymuje
+        Runtime.getRuntime().addShutdownHook(new Thread(poller::stop));
+
+        poller.start();
     }
 }
