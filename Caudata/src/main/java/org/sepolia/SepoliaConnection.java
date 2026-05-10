@@ -10,26 +10,30 @@ import java.math.BigInteger;
 
 public class SepoliaConnection
 {
-    private static Web3j web3;
+    private static Web3j web3j;
 
     public SepoliaConnection(String sepoliaUrl)
     {
-        web3 = Web3j.build(new HttpService(sepoliaUrl));
+        web3j = Web3j.build(new HttpService(sepoliaUrl));
     }
 
     public String getClientVersion() throws IOException
     {
 
-        Web3ClientVersion clientVersion = web3.web3ClientVersion().send();
-        System.out.println("Client Version: " + clientVersion.getWeb3ClientVersion());
+        Web3ClientVersion clientVersion = web3j.web3ClientVersion().send();
         return clientVersion.getWeb3ClientVersion();
     }
 
     public String getLatestBlock() throws IOException
     {
 
-        EthBlockNumber blockNumber = web3.ethBlockNumber().send();
-        System.out.println("Latest Block: " + blockNumber.getBlockNumber());
+        EthBlockNumber blockNumber = web3j.ethBlockNumber().send();
+
         return blockNumber.getBlockNumber().toString();
+    }
+
+    public Web3j getWeb3j()
+    {
+        return web3j;
     }
 }
