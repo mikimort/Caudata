@@ -44,7 +44,7 @@ public class BlockFetcher
             {
                 System.err.printf("Błąd połączenia bloku #%s: %s%n", blockNum, e.getMessage());
                 //Obsługa rate-limitingu
-                sleep(250);
+                sleep(1000);
             }
         }
         return result;

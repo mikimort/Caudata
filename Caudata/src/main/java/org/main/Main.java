@@ -15,7 +15,7 @@ public class Main
 {
     public static void main(String [] args) throws IOException
     {
-        SepoliaConnection sepoliaConnection = new SepoliaConnection("https://sepolia.infura.io/v3/29863256897141bf8003236221994040");
+        SepoliaConnection sepoliaConnection = new SepoliaConnection("https://sepolia.infura.io/v3/64151ebadac446c9a00c633e907341fd");
         System.out.println("Client Version: " + sepoliaConnection.getClientVersion());
         System.out.println("Latest Block: " + sepoliaConnection.getLatestBlock());
 
