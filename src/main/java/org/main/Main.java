@@ -57,7 +57,7 @@ public class Main
         System.out.printf("Śr. żużycie gazu:        %s%n", aggregator.averageGasUsed(transactions));
 
         System.out.println("### Uruchamianie pollingu ###");
-        BlockPoller poller = new BlockPoller(blockFetcher, 12);
+        BlockPoller poller = new BlockPoller(blockFetcher, 3);
 
         //Ctrl+C zatrzymuje
         Runtime.getRuntime().addShutdownHook(new Thread(poller::stop));

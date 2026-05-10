@@ -15,7 +15,8 @@ import static java.lang.Thread.sleep;
 public class BlockFetcher
 {
     private final Web3j web3j;
-    private final static int DELAY_MS = 1000;
+    private final static int DELAY_MS = 250;
+    private static final int MAX_RETRIES  = 3;
     public BlockFetcher(Web3j web3j)
     {
         this.web3j = web3j;
@@ -24,32 +25,50 @@ public class BlockFetcher
     public  List<BlockData> fetchLatestBlocks(int count) throws IOException
     {
         BigInteger latestNumber = web3j.ethBlockNumber().send().getBlockNumber();
-
         List<BlockData> result = new ArrayList<>();
 
         for(int i=0; i < count; i++)
         {
             BigInteger blockNum = latestNumber.subtract(BigInteger.valueOf(i));
-
-            try
+            BlockData block = fetchBlockWithRetry(blockNum);
+            if(block != null)
             {
-                EthBlock.Block block = web3j.ethGetBlockByNumber(DefaultBlockParameter.valueOf(blockNum), false).send().getBlock();
-
-                if (block != null)
-                {
-                    result.add(new BlockData(block.getNumber(), block.getHash(), block.getTransactions().size()));
-                }
+                result.add(block);
+                System.out.printf("Pobrano blok #%s (%d/%d)%n", blockNum, i + 1, count);
             }
-            catch (IOException e)
-            {
-                System.err.printf("Błąd połączenia bloku #%s: %s%n", blockNum, e.getMessage());
-                //Obsługa rate-limitingu
-                sleep(1000);
-            }
+            sleep(DELAY_MS);
         }
         return result;
 
     }
+
+    public  BlockData fetchBlockWithRetry(BigInteger blockNum) throws IOException
+    {
+
+        int attempt = 0;
+        while (attempt < MAX_RETRIES)
+        {
+           try
+           {
+               EthBlock.Block block = web3j.ethGetBlockByNumber(DefaultBlockParameter.valueOf(blockNum), false).send().getBlock();
+               if (block == null) return null;
+
+               return new BlockData(block.getNumber(), block.getHash(), block.getTransactions().size());
+
+           }
+           catch(Exception e)
+           {
+               attempt++;
+               long waitMS = 1000L + attempt;
+               System.err.printf("Błąd bloku #%s (próba %d/%d), czekam %ds: %s%n", blockNum, attempt, MAX_RETRIES, attempt, e.getMessage());
+               sleep(waitMS);
+           }
+
+        }
+        System.err.printf("Pominięto blok #%s po %d próbach. %n", blockNum, MAX_RETRIES);
+        return null;
+    }
+
 
     public EthBlock.Block fetchBlockWithTransactions(BigInteger blockNumber) throws IOException
     {
