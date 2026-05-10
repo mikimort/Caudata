@@ -43,7 +43,7 @@ public class TransactionFetcher
                 {
                     EthBlock.TransactionObject txObj = (EthBlock.TransactionObject) txResult.get();
 
-                    BigInteger gasUsed = resolveGasUsed(txObj);
+                    BigInteger gasUsed = txObj.getGas();
 
                     allTransactions.add(new TransactionData(txObj.getHash(), txObj.getFrom(), txObj.getTo(), txObj.getValue(), gasUsed));
 
@@ -64,18 +64,4 @@ public class TransactionFetcher
         return allTransactions;
     }
 
-    private BigInteger resolveGasUsed(EthBlock.TransactionObject txObj)
-    {
-        try
-        {
-            EthGetTransactionReceipt receiptResponse = web3j.ethGetTransactionReceipt(txObj.getHash()).send();
-            Optional<TransactionReceipt> receipt = receiptResponse.getTransactionReceipt();
-            if(receipt.isPresent())
-            {
-                return receipt.get().getGasUsed();
-            }
-        }
-        catch (IOException ignored) {}
-        return txObj.getGas();
-    }
 }
