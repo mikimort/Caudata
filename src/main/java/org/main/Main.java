@@ -7,6 +7,7 @@ import org.dataManage.DataAggregator;
 import org.dataManage.DataFilter;
 import org.model.BlockData;
 import org.model.TransactionData;
+import org.raports.RaportCreator;
 import org.sepolia.SepoliaConnection;
 
 import java.io.IOException;
@@ -59,10 +60,15 @@ public class Main
         System.out.println("### Uruchamianie pollingu ###");
         BlockPoller poller = new BlockPoller(blockFetcher, txFetcher, 10);
 
+        RaportCreator raportCreator = new RaportCreator();
         //Ctrl+C zatrzymuje
         Runtime.getRuntime().addShutdownHook(new Thread(poller::stop));
 
         Thread pollingThread = new Thread(poller::start);
         pollingThread.start();
+
+        String nazwaPliku = "raport_blockchain_" + System.currentTimeMillis() + ".csv";
+        raportCreator.exportToCSV(nazwaPliku, blocks);
+        System.out.println("Plik został zapisany jako: " + nazwaPliku);
     }
 }

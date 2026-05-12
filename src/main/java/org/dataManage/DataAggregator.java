@@ -4,6 +4,9 @@ package org.dataManage;
 import org.model.BlockData;
 import org.model.TransactionData;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.util.List;
 
@@ -36,4 +39,6 @@ public class DataAggregator
         BigInteger total = txs.stream().map(TransactionData::getGasUsed).reduce(BigInteger.ZERO, BigInteger::add);
         return total.divide(BigInteger.valueOf(txs.size()));
     }
+
+
 }

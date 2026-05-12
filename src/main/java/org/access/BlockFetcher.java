@@ -52,7 +52,7 @@ public class BlockFetcher
                EthBlock.Block block = web3j.ethGetBlockByNumber(DefaultBlockParameter.valueOf(blockNum), false).send().getBlock();
                if (block == null) return null;
 
-               return new BlockData(block.getNumber(), block.getHash(), block.getTransactions().size());
+               return new BlockData(block.getNumber(), block.getHash(), block.getTransactions().size(), block.getTimestamp());
 
            }
            catch(Exception e)
@@ -90,7 +90,7 @@ public class BlockFetcher
 
                 if(block != null)
                 {
-                    result.add(new BlockData(block.getNumber(), block.getHash(), block.getTransactions().size()));
+                    result.add(new BlockData(block.getNumber(), block.getHash(), block.getTransactions().size(), block.getTimestamp()));
                 }
 
                 sleep(DELAY_MS);
