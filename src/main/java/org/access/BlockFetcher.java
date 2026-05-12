@@ -36,7 +36,6 @@ public class BlockFetcher
                 result.add(block);
                 System.out.printf("Pobrano blok #%s (%d/%d)%n", blockNum, i + 1, count);
             }
-            sleep(DELAY_MS);
         }
         return result;
 

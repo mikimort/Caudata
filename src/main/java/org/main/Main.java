@@ -62,6 +62,7 @@ public class Main
         //Ctrl+C zatrzymuje
         Runtime.getRuntime().addShutdownHook(new Thread(poller::stop));
 
-        poller.start();
+        Thread pollingThread = new Thread(poller::start);
+        pollingThread.start();
     }
 }
