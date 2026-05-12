@@ -34,7 +34,7 @@ public class BlockFetcher
             if(block != null)
             {
                 result.add(block);
-                System.out.printf("Pobrano blok #%s (%d/%d)%n", blockNum, i + 1, count);
+
             }
         }
         return result;

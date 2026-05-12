@@ -1,6 +1,7 @@
 package org.access;
 
 import org.model.BlockData;
+import org.model.TransactionData;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -8,13 +9,15 @@ import java.util.List;
 public class BlockPoller
 {
     private final BlockFetcher blockFetcher;
+    private final TransactionFetcher transactionFetcher;
     private final int intervalSeconds;
 
     private volatile boolean running = true;
 
-    public BlockPoller(BlockFetcher blockFetcher, int intervalSeconds)
+    public BlockPoller(BlockFetcher blockFetcher, TransactionFetcher transactionFetcher, int intervalSeconds)
     {
         this.blockFetcher = blockFetcher;
+        this.transactionFetcher = transactionFetcher;
         this.intervalSeconds = intervalSeconds;
     }
 
@@ -47,7 +50,9 @@ public class BlockPoller
                     List<BlockData> newBlocks = blockFetcher.fetchBlockRange(from, latest);
 
                     System.out.printf("%n[ + ] %d nowy/nowych bloków: %n", newBlocks.size());
-
+                    System.out.println(newBlocks);
+                    List<TransactionData> transactions = transactionFetcher.fetchTransactionsForBlocksWithRetry(newBlocks);
+                    transactions.forEach(System.out::println);
                     lastKnownBlock = latest;
                 }
                 else
