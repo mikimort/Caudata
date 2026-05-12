@@ -6,6 +6,7 @@ import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.methods.response.EthBlock;
 import org.web3j.protocol.core.methods.response.EthGetTransactionReceipt;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.web3j.protocol.exceptions.ClientConnectionException;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -25,6 +26,24 @@ public class TransactionFetcher
     {
         this.web3j = web3j;
         this.blockFetcher = blockFetcher;
+    }
+    public List<TransactionData> fetchTransactionsForBlocksWithRetry(List<BlockData> blocks) throws IOException
+    {
+        List<TransactionData> allTransactions = new ArrayList<>();
+        for(int i =0; i< 3; i++)
+        {
+            try
+            {
+                allTransactions = fetchTransactionsForBlocks(blocks);
+            }
+            catch (ClientConnectionException e)
+            {
+                System.out.printf("Błąd tranzakcji, (próba %d/3), czekam 1s: %s%n", i + 1, e.getMessage());
+                sleep(1000);
+                continue;
+            }
+        }
+        return allTransactions;
     }
 
     public List<TransactionData> fetchTransactionsForBlocks(List<BlockData> blocks) throws IOException
@@ -61,6 +80,18 @@ public class TransactionFetcher
             }
         }
         return allTransactions;
+    }
+
+    private void sleep(long ms)
+    {
+        try
+        {
+            Thread.sleep(ms);
+        }
+        catch (InterruptedException ie)
+        {
+            Thread.currentThread().interrupt();
+        }
     }
 
 }

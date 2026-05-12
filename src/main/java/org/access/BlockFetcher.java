@@ -15,7 +15,7 @@ import static java.lang.Thread.sleep;
 public class BlockFetcher
 {
     private final Web3j web3j;
-    private final static int DELAY_MS = 250;
+    private final static int DELAY_MS = 100;
     private static final int MAX_RETRIES  = 3;
     public BlockFetcher(Web3j web3j)
     {
@@ -82,7 +82,7 @@ public class BlockFetcher
     public List<BlockData> fetchBlockRange(BigInteger from, BigInteger to)
     {
         List<BlockData> result = new ArrayList<>();
-        for(BigInteger num = from; num.compareTo(to) <= 0; num.add(BigInteger.ONE))
+        for(BigInteger num = from; num.compareTo(to) <= 0; num = num.add(BigInteger.ONE))
         {
             try
             {

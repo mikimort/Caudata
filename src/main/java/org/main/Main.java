@@ -39,7 +39,7 @@ public class Main
         List<BlockData> newestTen = filter.takeNewest(blocks, 10);
 
         System.out.println("### Pobieranie transakcji dla 10 najnowszych bloków ###");
-        List<TransactionData> transactions = txFetcher.fetchTransactionsForBlocks(newestTen);
+        List<TransactionData> transactions = txFetcher.fetchTransactionsForBlocksWithRetry(newestTen);
         transactions.forEach(System.out::println);
 
         List<TransactionData> highValue = filter.filterByMinValue(transactions, 0.01);
