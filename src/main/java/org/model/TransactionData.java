@@ -1,6 +1,7 @@
 package org.model;
 
 import java.math.BigInteger;
+import java.util.Objects;
 
 public class TransactionData
 {
@@ -54,6 +55,23 @@ public class TransactionData
     public String toString()
     {
         return String.format("   Tx: %s%n    Od: %s%n     Do:    %s%n     Wartość: %.6f Eth   | Gas: %s", txHash, from, to != null ? to : "(tworzenie kontraktu)", getValueEth(), gasUsed);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TransactionData that = (TransactionData) o;
+        return Objects.equals(txHash, that.txHash) &&
+                Objects.equals(from, that.from) &&
+                Objects.equals(to, that.to) &&
+                Objects.equals(valueWei, that.valueWei) &&
+                Objects.equals(gasUsed, that.gasUsed);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(txHash, from, to, valueWei, gasUsed);
     }
 
 }

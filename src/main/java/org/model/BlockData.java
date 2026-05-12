@@ -1,5 +1,6 @@
 package org.model;
 import java.math.BigInteger;
+import java.util.Objects;
 
 public class BlockData
 {
@@ -32,4 +33,20 @@ public class BlockData
     {
         return String.format("[Blok #%s] Hash: %s | Liczba Tx: %d", blockNumber, blockHash, transactionCount);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BlockData blockData = (BlockData) o;
+        return transactionCount == blockData.transactionCount &&
+                Objects.equals(blockNumber, blockData.blockNumber) &&
+                Objects.equals(blockHash, blockData.blockHash);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(blockNumber, blockHash, transactionCount);
+    }
+
 }
