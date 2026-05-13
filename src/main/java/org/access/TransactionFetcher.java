@@ -1,5 +1,6 @@
 package org.access;
 
+import org.UI.Printer;
 import org.model.BlockData;
 import org.model.TransactionData;
 import org.web3j.protocol.Web3j;
@@ -13,6 +14,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 /*
 * Pobieranie transakcji dla wzkazanych bloków
@@ -21,12 +23,19 @@ public class TransactionFetcher
 {
     private final Web3j web3j;
     private final BlockFetcher blockFetcher;
+    private final Consumer<String> onProgress;
 
-    public TransactionFetcher(Web3j web3j, BlockFetcher blockFetcher)
-    {
-        this.web3j = web3j;
-        this.blockFetcher = blockFetcher;
+
+    public TransactionFetcher(Web3j web3j, BlockFetcher blockFetcher) {
+        this(web3j, blockFetcher, msg -> {});
     }
+
+    public TransactionFetcher(Web3j web3j, BlockFetcher blockFetcher, Consumer<String> onProgress) {
+        this.web3j        = web3j;
+        this.blockFetcher = blockFetcher;
+        this.onProgress   = onProgress;
+    }
+
     public List<TransactionData> fetchTransactionsForBlocksWithRetry(List<BlockData> blocks) throws IOException
     {
         List<TransactionData> allTransactions = new ArrayList<>();
@@ -38,7 +47,7 @@ public class TransactionFetcher
             }
             catch (ClientConnectionException e)
             {
-                System.out.printf("Błąd tranzakcji, (próba %d/3), czekam 1s: %s%n", i + 1, e.getMessage());
+                Printer.warn(String.format("Błąd tranzakcji, (próba %d/3), czekam 1s: %s%n", i + 1, e.getMessage()));
                 sleep(1000);
                 continue;
             }
@@ -49,9 +58,12 @@ public class TransactionFetcher
     public List<TransactionData> fetchTransactionsForBlocks(List<BlockData> blocks) throws IOException
     {
         List<TransactionData> allTransactions = new ArrayList<>();
+        int total = blocks.size();
 
-        for(BlockData bd : blocks)
-        {
+        for (int i = 0; i < total; i++) {
+            BlockData bd = blocks.get(i);
+            onProgress.accept(String.format(
+                    "Pobieranie transakcji dla bloku #%s  (%d / %d)", bd.getBlockNumber(), i + 1, total));
             try
             {
                 EthBlock.Block fullBlock = blockFetcher.fetchBlockWithTransactions(bd.getBlockNumber());
@@ -70,7 +82,7 @@ public class TransactionFetcher
             }
             catch(IOException e)
             {
-                System.err.printf("Błąd pobierania dla bloku #%s: %s%n", bd.getBlockNumber(), e.getMessage());
+                Printer.error(String.format("Błąd pobierania dla bloku #%s: %s%n", bd.getBlockNumber(), e.getMessage()));
             }
 
             catch (InterruptedException e)

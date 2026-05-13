@@ -1,5 +1,6 @@
 package org.access;
 
+import org.UI.Printer;
 import org.model.BlockData;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameter;
@@ -9,19 +10,24 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static java.lang.Thread.sleep;
 
 public class BlockFetcher
 {
     private final Web3j web3j;
+    private final Consumer<String> onProgress;
     private final static int DELAY_MS = 100;
     private static final int MAX_RETRIES  = 3;
-    public BlockFetcher(Web3j web3j)
-    {
-        this.web3j = web3j;
-    }
 
+    public BlockFetcher(Web3j web3j) {
+        this(web3j, msg -> {});
+    }
+    public BlockFetcher(Web3j web3j, Consumer<String> onProgress) {
+        this.web3j      = web3j;
+        this.onProgress = onProgress;
+    }
     public  List<BlockData> fetchLatestBlocks(int count) throws IOException
     {
         BigInteger latestNumber = web3j.ethBlockNumber().send().getBlockNumber();
@@ -30,6 +36,7 @@ public class BlockFetcher
         for(int i=0; i < count; i++)
         {
             BigInteger blockNum = latestNumber.subtract(BigInteger.valueOf(i));
+            onProgress.accept(String.format("Pobieranie bloku #%s  (%d / %d)", blockNum, i + 1, count));
             BlockData block = fetchBlockWithRetry(blockNum);
             if(block != null)
             {
@@ -59,12 +66,12 @@ public class BlockFetcher
            {
                attempt++;
                long waitMS = 1000L + attempt;
-               System.err.printf("Błąd bloku #%s (próba %d/%d), czekam %ds: %s%n", blockNum, attempt, MAX_RETRIES, attempt, e.getMessage());
+               Printer.warn(String.format("Błąd bloku #%s (próba %d/%d), czekam %ds: %s", blockNum, attempt, MAX_RETRIES, waitMS / 1000, e.getMessage()));
                sleep(waitMS);
            }
 
         }
-        System.err.printf("Pominięto blok #%s po %d próbach. %n", blockNum, MAX_RETRIES);
+        Printer.error(String.format("Pominięto blok #%s po %d próbach. %n", blockNum, MAX_RETRIES));
         return null;
     }
 
@@ -97,7 +104,7 @@ public class BlockFetcher
             }
             catch (IOException e)
             {
-                System.err.printf("Błąd pobierania bloku #%s: %s%n", num, e.getMessage());
+                Printer.error(String.format("Błąd pobierania bloku #%s: %s%n", num, e.getMessage()));
             }
         }
 
