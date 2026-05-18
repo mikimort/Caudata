@@ -1,5 +1,6 @@
-package org.dataManage;
+package dataManage;
 
+import org.dataManage.DataFilter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 import static org.junit.jupiter.api.Assertions.*;
