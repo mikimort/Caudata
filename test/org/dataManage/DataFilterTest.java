@@ -16,14 +16,14 @@ class DataFilterTest {
     void filterBlocksByMinTransactions1() {
         // given
         List<BlockData> blocks1 = List.of(
-                new BlockData(BigInteger.valueOf(8), "aah69bh5", 10),
-                new BlockData(BigInteger.valueOf(4), "ioh781nd", 14),
-                new BlockData(BigInteger.valueOf(6), "poe767b2", 5)
+                new BlockData(BigInteger.valueOf(8), "aah69bh5", 10, BigInteger.valueOf(1)),
+                new BlockData(BigInteger.valueOf(4), "ioh781nd", 14, BigInteger.valueOf(2)),
+                new BlockData(BigInteger.valueOf(6), "poe767b2", 5, BigInteger.valueOf(3))
         );
 
         List<BlockData> expected = List.of(
-                new BlockData(BigInteger.valueOf(4), "ioh781nd", 14),
-                new BlockData(BigInteger.valueOf(8), "aah69bh5", 10)
+                new BlockData(BigInteger.valueOf(4), "ioh781nd", 14, BigInteger.valueOf(2)),
+                new BlockData(BigInteger.valueOf(8), "aah69bh5", 10, BigInteger.valueOf(1))
         );
 
         DataFilter filter = new DataFilter();
@@ -40,14 +40,14 @@ class DataFilterTest {
     void filterBlocksByMinTransactions2() {
         // given
         List<BlockData> blocks1 = List.of(
-                new BlockData(BigInteger.valueOf(45), "aah69bh5", 10),
-                new BlockData(BigInteger.valueOf(4), "opasgu32", 0),
-                new BlockData(BigInteger.valueOf(120), "poe767b2", 1)
+                new BlockData(BigInteger.valueOf(45), "aah69bh5", 10, BigInteger.valueOf(1)),
+                new BlockData(BigInteger.valueOf(4), "opasgu32", 0, BigInteger.valueOf(2)),
+                new BlockData(BigInteger.valueOf(120), "poe767b2", 1, BigInteger.valueOf(3))
         );
 
         List<BlockData> expected = List.of(
-                new BlockData(BigInteger.valueOf(45), "aah69bh5", 10),
-                new BlockData(BigInteger.valueOf(120), "poe767b2", 1)
+                new BlockData(BigInteger.valueOf(45), "aah69bh5", 10, BigInteger.valueOf(1)),
+                new BlockData(BigInteger.valueOf(120), "poe767b2", 1, BigInteger.valueOf(3))
         );
 
         DataFilter filter = new DataFilter();
@@ -172,18 +172,18 @@ class DataFilterTest {
     void takeNewest() {
         // given
         List<BlockData> blocks = List.of(
-                new BlockData(BigInteger.valueOf(10), "hash10", 5),
-                new BlockData(BigInteger.valueOf(50), "hash50", 10),
-                new BlockData(BigInteger.valueOf(30), "hash30", 7),
-                new BlockData(BigInteger.valueOf(20), "hash20", 3),
-                new BlockData(BigInteger.valueOf(40), "hash40", 8)
+                new BlockData(BigInteger.valueOf(10), "hash10", 5, BigInteger.valueOf(1)),
+                new BlockData(BigInteger.valueOf(50), "hash50", 10, BigInteger.valueOf(2)),
+                new BlockData(BigInteger.valueOf(30), "hash30", 7, BigInteger.valueOf(3)),
+                new BlockData(BigInteger.valueOf(20), "hash20", 3, BigInteger.valueOf(4)),
+                new BlockData(BigInteger.valueOf(40), "hash40", 8, BigInteger.valueOf(5))
         );
         int n = 3;
 
         List<BlockData> expected = List.of(
-                new BlockData(BigInteger.valueOf(10), "hash10", 5),
-                new BlockData(BigInteger.valueOf(50), "hash50", 10),
-                new BlockData(BigInteger.valueOf(30), "hash30", 7)
+                new BlockData(BigInteger.valueOf(10), "hash10", 5, BigInteger.valueOf(1)),
+                new BlockData(BigInteger.valueOf(50), "hash50", 10, BigInteger.valueOf(2)),
+                new BlockData(BigInteger.valueOf(30), "hash30", 7, BigInteger.valueOf(3))
         );
 
         DataFilter filter = new DataFilter();
