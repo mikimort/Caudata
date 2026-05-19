@@ -50,7 +50,7 @@ public class BlockPoller
                     BigInteger from = lastKnownBlock.add(BigInteger.ONE);
                     List<BlockData> newBlocks = blockFetcher.fetchBlockRange(from, latest);
 
-                    Printer.section("%n[ + ] "+newBlocks.size()+" nowy/nowych bloków: %n");
+                    Printer.section("[ + ] "+newBlocks.size()+" nowy/nowych bloków: ");
                     System.out.println(newBlocks);
                     List<TransactionData> transactions = transactionFetcher.fetchTransactionsForBlocksWithRetry(newBlocks);
                     transactions.forEach(System.out::println);

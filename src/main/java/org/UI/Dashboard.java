@@ -8,14 +8,27 @@ import java.time.format.DateTimeFormatter;
 
 import static org.UI.TerminalUI.*;
 
+/**
+ * Główny widok aplikacji wyświetlany w terminalu po zakończeniu pobierania danych.
+ *
+ * Dashboard renderuje statystyki sieci Ethereum Sepolia w czytelnym układzie
+ * podzielonym na sekcje. Przed renderowaniem czyści ekran, zastępując
+ * wcześniejszy postęp pobierania gotowym podsumowaniem.
+ *
+ * Dane wejściowe pochodzą z obiektu Stats zbudowanego przez StatsBuilder}
+ */
+
 public class Dashboard {
 
     private static final int WIDTH = 60;
     private static final DateTimeFormatter TIME_FMT = DateTimeFormatter.ofPattern("HH:mm:ss");
 
+    /**
+     * Renderuje pełny dashboard ze wszystkimi sekcjami.
+     *
+     * @param stats obiekt ze statystykami zbudowany przez StatsBuilder
+     */
     public void render(Stats stats) {
-        clear();
-
         printHeader();
         printOverview(stats);
         printGasStats(stats);
@@ -75,7 +88,6 @@ public class Dashboard {
         System.out.println();
     }
 
-    /** Truncates a string to maxLen, appending "…" if cut. */
     private static String abbreviate(String s, int maxLen) {
         if (s == null) return "(null)";
         if (s.length() <= maxLen) return s;

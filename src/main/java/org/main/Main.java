@@ -46,7 +46,6 @@ public class Main
         List<BlockData> activeBlocks = filter.filterBlocksByMinTransactions(blocks, 1);
         List<BlockData> newestTen = filter.takeNewest(blocks, 10);
 
-        List<TransactionData> transactions = txFetcher.fetchTransactionsForBlocksWithRetry(newestTen);
         List<TransactionData> txs = txFetcher.fetchTransactionsForBlocksWithRetry(newestTen);
 
         Printer.filterSummary(filter, blocks, activeBlocks, txs);

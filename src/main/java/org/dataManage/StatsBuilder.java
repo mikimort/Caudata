@@ -8,9 +8,15 @@ import java.math.BigInteger;
 import java.util.List;
 
 /**
- * Assembles a Stats object from raw block and transaction lists.
- * Delegates all calculations to DataAggregator to avoid duplication.
+ * Buduje obiekt Stats na podstawie list bloków i transakcji.
+ * Obliczenia delegowane są do DataAggregator, żeby uniknąć duplikacji logiki.
+ * StatsBuilder odpowiada tylko za zebranie wyników i złożenie ich w jeden obiekt Stats.
+ *
+ * Przykład użycia:
+ *   StatsBuilder builder = new StatsBuilder();
+ *   Stats stats = builder.build(blocks, transactions);
  */
+
 public class StatsBuilder {
 
     private static final int LATEST_TX_LIMIT = 10;
@@ -20,7 +26,6 @@ public class StatsBuilder {
         this.aggregator = new DataAggregator();
     }
 
-    /** Allows injecting a custom/mock aggregator (useful for testing). */
     public StatsBuilder(DataAggregator aggregator) {
         this.aggregator = aggregator;
     }

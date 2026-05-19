@@ -8,6 +8,13 @@ import java.util.List;
 
 import static org.UI.TerminalUI.*;
 
+/**
+ * Centralna klasa pomocnicza do wyświetlania wszystkich komunikatów w terminalu.
+ *
+ * Wszystkie metody są statyczne — można je wywoływać bez tworzenia instancji Printer.
+ * Każda metoda dodaje spójne stylowanie ANSI, dzięki czemu wygląd aplikacji
+ * jest jednolity w całym projekcie.
+ */
 public class Printer {
 
     public static void section(String title) {
@@ -46,6 +53,14 @@ public class Printer {
                 DIM + label + RESET, valueColor + BOLD, value, RESET);
     }
 
+    /**
+     * Drukuje sekcję podsumowania filtrów dla bloków i transakcji.
+     *
+     * @param filter       instancja DataFilter używana do ponownego zastosowania filtrów
+     * @param allBlocks    pełna lista pobranych bloków
+     * @param activeBlocks bloki które przeszły filtr minimalnej liczby transakcji
+     * @param txs          transakcje pobrane dla najnowszych bloków
+     */
     public static void filterSummary(
             DataFilter filter,
             List<BlockData> allBlocks,

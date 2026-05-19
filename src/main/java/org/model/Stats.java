@@ -3,6 +3,14 @@ package org.model;
 import java.math.BigInteger;
 import java.util.List;
 
+/**
+ * Obiekt przechowujący zagregowane statystyki
+ * dla zestawu bloków i transakcji z sieci Ethereum Sepolia.
+ *
+ * Tworzony przez StatsBuilder i przekazywany do warstwy UI
+ * Dashboard w celu wyświetlenia.
+ */
+
 public class Stats {
 
     private final BigInteger latestBlock;
