@@ -11,14 +11,16 @@ public class BlockPoller
     private final BlockFetcher blockFetcher;
     private final TransactionFetcher transactionFetcher;
     private final int intervalSeconds;
+    private final List<BlockData> allBlocks;
 
     private volatile boolean running = true;
 
-    public BlockPoller(BlockFetcher blockFetcher, TransactionFetcher transactionFetcher, int intervalSeconds)
+    public BlockPoller(BlockFetcher blockFetcher, TransactionFetcher transactionFetcher, int intervalSeconds, List<BlockData> allBlocks)
     {
         this.blockFetcher = blockFetcher;
         this.transactionFetcher = transactionFetcher;
         this.intervalSeconds = intervalSeconds;
+        this.allBlocks = allBlocks;
     }
 
     public void stop()
@@ -48,6 +50,8 @@ public class BlockPoller
                     //Są nowe bloki
                     BigInteger from = lastKnownBlock.add(BigInteger.ONE);
                     List<BlockData> newBlocks = blockFetcher.fetchBlockRange(from, latest);
+
+                    allBlocks.addAll(newBlocks);
 
                     System.out.printf("%n[ + ] %d nowy/nowych bloków: %n", newBlocks.size());
                     System.out.println(newBlocks);
