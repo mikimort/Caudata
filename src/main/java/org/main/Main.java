@@ -43,7 +43,6 @@ public class Main
         // ### Pobranie 100 najnowszych bloków
         Printer.section("Pobranie 100 najnowszych bloków i transakcji dla 10 ostatnich");
 
-        //List<BlockData> blocks = blockFetcher.fetchLatestBlocks(BLOCKS);
         List<BlockData> blocks = new CopyOnWriteArrayList<>(blockFetcher.fetchLatestBlocks(100));
         List<BlockData> activeBlocks = filter.filterBlocksByMinTransactions(blocks, 1);
         List<BlockData> newestTen = filter.takeNewest(blocks, 10);
