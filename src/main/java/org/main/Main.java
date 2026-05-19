@@ -19,6 +19,7 @@ import org.model.Stats;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Main
 {
@@ -42,7 +43,7 @@ public class Main
         // ### Pobranie 100 najnowszych bloków
         Printer.section("Pobranie 100 najnowszych bloków i transakcji dla 10 ostatnich");
 
-        List<BlockData> blocks = blockFetcher.fetchLatestBlocks(BLOCKS);
+        List<BlockData> blocks = new CopyOnWriteArrayList<>(blockFetcher.fetchLatestBlocks(100));
         List<BlockData> activeBlocks = filter.filterBlocksByMinTransactions(blocks, 1);
         List<BlockData> newestTen = filter.takeNewest(blocks, 10);
 
@@ -55,17 +56,23 @@ public class Main
         dashboard.render(stats);
 
         Printer.section("Uruchamianie pollingu");
-        BlockPoller poller = new BlockPoller(blockFetcher, txFetcher, POLL_SEC);
+        BlockPoller poller = new BlockPoller(blockFetcher, txFetcher, POLL_SEC, blocks);
 
         RaportCreator raportCreator = new RaportCreator();
         //Ctrl+C zatrzymuje
-        Runtime.getRuntime().addShutdownHook(new Thread(poller::stop));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            System.out.println("\nZamykanie aplikacji... Zatrzymuję polling.");
+            poller.stop();
+
+            System.out.println("Generowanie raportu końcowego...");
+            String nazwaPliku = "raport_blockchain_" + System.currentTimeMillis() + ".csv";
+
+            // Raport zostaje wygenerowany w momencie zamknięcia programu
+            raportCreator.exportToCSV(nazwaPliku, blocks);
+            System.out.println("Plik został zapisany jako: " + nazwaPliku);
+        }));
 
         Thread pollingThread = new Thread(poller::start);
         pollingThread.start();
-
-        String nazwaPliku = "raport_blockchain_" + System.currentTimeMillis() + ".csv";
-        raportCreator.exportToCSV(nazwaPliku, blocks);
-        System.out.println("Plik został zapisany jako: " + nazwaPliku);
     }
 }

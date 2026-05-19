@@ -12,14 +12,16 @@ public class BlockPoller
     private final BlockFetcher blockFetcher;
     private final TransactionFetcher transactionFetcher;
     private final int intervalSeconds;
+    private final List<BlockData> allBlocks;
 
     private volatile boolean running = true;
 
-    public BlockPoller(BlockFetcher blockFetcher, TransactionFetcher transactionFetcher, int intervalSeconds)
+    public BlockPoller(BlockFetcher blockFetcher, TransactionFetcher transactionFetcher, int intervalSeconds, List<BlockData> allBlocks)
     {
         this.blockFetcher = blockFetcher;
         this.transactionFetcher = transactionFetcher;
         this.intervalSeconds = intervalSeconds;
+        this.allBlocks = allBlocks;
     }
 
     public void stop()
@@ -50,6 +52,7 @@ public class BlockPoller
                     BigInteger from = lastKnownBlock.add(BigInteger.ONE);
                     List<BlockData> newBlocks = blockFetcher.fetchBlockRange(from, latest);
 
+                    allBlocks.addAll(newBlocks);
                     Printer.section("[ + ] "+newBlocks.size()+" nowy/nowych bloków: ");
                     System.out.println(newBlocks);
                     List<TransactionData> transactions = transactionFetcher.fetchTransactionsForBlocksWithRetry(newBlocks);
