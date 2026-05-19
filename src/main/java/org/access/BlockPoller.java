@@ -7,8 +7,13 @@ import org.model.TransactionData;
 import java.math.BigInteger;
 import java.util.List;
 
-public class BlockPoller
-{
+/**
+ * Klasa realizująca ciągłe monitorowanie sieci (polling).
+ * Cyklicznie sprawdza, czy pojawiły się nowe bloki.
+ * Przy nowych blokach pobiera je wraz z transakcjami i wypisuje do konsoli.
+ * Zatrzymywanie jest wątkobezpieczne dzięki volatile boolean running.
+ */
+public class BlockPoller {
     private final BlockFetcher blockFetcher;
     private final TransactionFetcher transactionFetcher;
     private final int intervalSeconds;
@@ -16,68 +21,57 @@ public class BlockPoller
 
     private volatile boolean running = true;
 
-    public BlockPoller(BlockFetcher blockFetcher, TransactionFetcher transactionFetcher, int intervalSeconds, List<BlockData> allBlocks)
-    {
+    public BlockPoller(BlockFetcher blockFetcher, TransactionFetcher transactionFetcher, int intervalSeconds, List<BlockData> allBlocks) {
         this.blockFetcher = blockFetcher;
         this.transactionFetcher = transactionFetcher;
         this.intervalSeconds = intervalSeconds;
         this.allBlocks = allBlocks;
     }
 
-    public void stop()
-    {
+    /**
+     * Zatrzymuje pętlę pollingu (ustawia running = false).
+     */
+    public void stop() {
         running = false;
     }
 
-    public void start()
-    {
-        System.out.printf("Uruchomiono pulling (co %d s). ", intervalSeconds);
+    /**
+     * Uruchamia pętlę pollingu. Blokuje wątek do momentu wywołania stop().
+     */
+    public void start() {
+        Printer.info(String.format("Uruchomiono pulling (co %d s). ", intervalSeconds));
         BigInteger lastKnownBlock = null;
 
-        while(running)
-        {
-            try
-            {
+        while (running) {
+            try {
                 BigInteger latest = blockFetcher.getLatestBlockNumber();
 
-                if(lastKnownBlock == null)
-                {
+                if (lastKnownBlock == null) {
                     lastKnownBlock = latest;
-                    Printer.info("Punkt startowy: blok #"+ latest);
+                    Printer.info("Punkt startowy: blok #" + latest);
 
-                }
-                else if(latest.compareTo(lastKnownBlock) > 0)
-                {
+                } else if (latest.compareTo(lastKnownBlock) > 0) {
                     //Są nowe bloki
                     BigInteger from = lastKnownBlock.add(BigInteger.ONE);
                     List<BlockData> newBlocks = blockFetcher.fetchBlockRange(from, latest);
 
                     allBlocks.addAll(newBlocks);
-                    Printer.section("[ + ] "+newBlocks.size()+" nowy/nowych bloków: ");
+                    Printer.section("[ + ] " + newBlocks.size() + " nowy/nowych bloków: ");
                     System.out.println(newBlocks);
                     List<TransactionData> transactions = transactionFetcher.fetchTransactionsForBlocksWithRetry(newBlocks);
                     transactions.forEach(System.out::println);
                     lastKnownBlock = latest;
-                }
-                else
-                {
-                    Printer.dim("Brak nowych bloków (ostatni: #"+ latest+")");
+                } else {
+                    Printer.dim("Brak nowych bloków (ostatni: #" + latest + ")");
                 }
                 Thread.sleep(intervalSeconds * 1000L);
-            }
-            catch (InterruptedException e)
-            {
+            } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-            }
-            catch(Exception e)
-            {
+            } catch (Exception e) {
                 System.err.println("Błąd pollingu: " + e.getMessage());
-                try
-                {
+                try {
                     Thread.sleep(intervalSeconds * 1000L);
-                }
-                catch (InterruptedException es)
-                {
+                } catch (InterruptedException es) {
                     Thread.currentThread().interrupt();
                 }
             }

@@ -1,42 +1,42 @@
 package org.model;
+
 import java.math.BigInteger;
 import java.util.Objects;
 
-public class BlockData
-{
+/**
+ * Niemodyfikowalny (immutable) model danych reprezentujący jeden blok sieci Ethereum.
+ */
+public class BlockData {
     private final BigInteger blockNumber;
     private final String blockHash;
     private final int transactionCount;
     private BigInteger timestamp;
 
-    public BlockData(BigInteger blockNumber, String blockHash, int transactionCount, BigInteger timestamp)
-    {
+    public BlockData(BigInteger blockNumber, String blockHash, int transactionCount, BigInteger timestamp) {
         this.blockNumber = blockNumber;
         this.blockHash = blockHash;
         this.transactionCount = transactionCount;
         this.timestamp = timestamp;
     }
 
-    public BigInteger getBlockNumber()
-    {
+    public BigInteger getBlockNumber() {
         return blockNumber;
     }
-    public String getBlockHash()
-    {
+
+    public String getBlockHash() {
         return blockHash;
     }
-    public int getTransactionCount()
-    {
+
+    public int getTransactionCount() {
         return transactionCount;
     }
-    public BigInteger getTimestamp()
-    {
+
+    public BigInteger getTimestamp() {
         return timestamp;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return String.format("[Blok #%s] Hash: %s | Liczba Tx: %d", blockNumber, blockHash, transactionCount, timestamp);
     }
 
