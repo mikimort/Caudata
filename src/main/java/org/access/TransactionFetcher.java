@@ -44,6 +44,7 @@ public class TransactionFetcher
             try
             {
                 allTransactions = fetchTransactionsForBlocks(blocks);
+                break;
             }
             catch (ClientConnectionException e)
             {
