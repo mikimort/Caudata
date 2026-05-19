@@ -1,5 +1,7 @@
 package org.main;
 
+import org.UI.Printer;
+import org.UI.TerminalUI;
 import org.access.BlockFetcher;
 import org.access.BlockPoller;
 import org.access.TransactionFetcher;
@@ -10,56 +12,56 @@ import org.model.TransactionData;
 import org.raports.RaportCreator;
 import org.sepolia.SepoliaConnection;
 
+import org.UI.Dashboard;
+import org.UI.Printer;
+import org.dataManage.StatsBuilder;
+import org.model.Stats;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Main
 {
+    private static final int BLOCKS = 100;
+    private static final int POLL_SEC = 10;
+
     public static void main(String [] args) throws IOException
     {
         SepoliaConnection sepoliaConnection = new SepoliaConnection("https://sepolia.infura.io/v3/64151ebadac446c9a00c633e907341fd");
-        System.out.println("Client Version: " + sepoliaConnection.getClientVersion());
-        System.out.println("Latest Block: " + sepoliaConnection.getLatestBlock());
+        Printer.success("Połączono z Sepolią, wersja: "+ sepoliaConnection.getClientVersion());
+        Printer.info("Ostatni blok: " + sepoliaConnection.getLatestBlock());
 
         var web3j = sepoliaConnection.getWeb3j();
-
-        BlockFetcher blockFetcher = new BlockFetcher(web3j);
-        TransactionFetcher txFetcher = new TransactionFetcher(web3j, blockFetcher);
-
+        BlockFetcher blockFetcher = new BlockFetcher(web3j, Printer::info);
+        TransactionFetcher txFetcher = new TransactionFetcher(web3j, blockFetcher, Printer::info);
+        DataFilter filter = new DataFilter();
+        DataAggregator aggregator = new DataAggregator();
+        Dashboard dashboard = new Dashboard();
+        StatsBuilder builder = new StatsBuilder(aggregator);
 
         // ### Pobranie 100 najnowszych bloków
+        Printer.section("Pobranie 100 najnowszych bloków i transakcji dla 10 ostatnich");
 
-        System.out.println("\n ### Pobranie 100 najnowszych bloków ###");
         List<BlockData> blocks = new CopyOnWriteArrayList<>(blockFetcher.fetchLatestBlocks(100));
         blocks.forEach(System.out::println);
 
         DataFilter filter = new DataFilter();
+        List<BlockData> blocks = blockFetcher.fetchLatestBlocks(BLOCKS);
         List<BlockData> activeBlocks = filter.filterBlocksByMinTransactions(blocks, 1);
-        System.out.printf("%nBloki z co najmniej 1 transakcją: %d / %d%n", activeBlocks.size(), blocks.size());
-
         List<BlockData> newestTen = filter.takeNewest(blocks, 10);
 
-        System.out.println("### Pobieranie transakcji dla 10 najnowszych bloków ###");
-        List<TransactionData> transactions = txFetcher.fetchTransactionsForBlocksWithRetry(newestTen);
-        transactions.forEach(System.out::println);
+        List<TransactionData> txs = txFetcher.fetchTransactionsForBlocksWithRetry(newestTen);
 
-        List<TransactionData> highValue = filter.filterByMinValue(transactions, 0.01);
-        System.out.printf("%nTransakcje >= 0.01 ETH: %d%n", highValue.size());
+        Printer.filterSummary(filter, blocks, activeBlocks, txs);
 
-        List<TransactionData> lowGas = filter.filterByMaxGas(transactions, 100000);
-        System.out.printf("Transakcje z gasUsed <= 100000: %d%n", lowGas.size());
+        Stats stats = builder.build(blocks, txs);
+        //TerminalUI.clear();
+        dashboard.render(stats);
 
-        DataAggregator aggregator = new DataAggregator();
-        System.out.println("\n ### Statystyki zbiorcze ###");
-        System.out.printf("Łącznei bloków:          %d%n", aggregator.totalBlocks(blocks));
-        System.out.printf("Łącznie transakcji:      %d%n", aggregator.totalTransactions(transactions));
-        System.out.printf("Śr. tx / blok:           %.2f%n", aggregator.averageTxPerBlock(blocks));
-        System.out.printf("Łączna wartość (ETH):    %.4f%n", aggregator.totalValueEth(transactions));
-        System.out.printf("Śr. żużycie gazu:        %s%n", aggregator.averageGasUsed(transactions));
-
-        System.out.println("### Uruchamianie pollingu ###");
         BlockPoller poller = new BlockPoller(blockFetcher, txFetcher, 10, blocks);
+        Printer.section("Uruchamianie pollingu");
+        BlockPoller poller = new BlockPoller(blockFetcher, txFetcher, POLL_SEC);
 
         RaportCreator raportCreator = new RaportCreator();
         //Ctrl+C zatrzymuje

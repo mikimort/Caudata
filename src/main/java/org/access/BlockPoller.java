@@ -1,5 +1,6 @@
 package org.access;
 
+import org.UI.Printer;
 import org.model.BlockData;
 import org.model.TransactionData;
 
@@ -42,7 +43,7 @@ public class BlockPoller
                 if(lastKnownBlock == null)
                 {
                     lastKnownBlock = latest;
-                    System.out.printf("Punkt startowy: blok #%s%n", latest);
+                    Printer.info("Punkt startowy: blok #"+ latest);
 
                 }
                 else if(latest.compareTo(lastKnownBlock) > 0)
@@ -52,8 +53,7 @@ public class BlockPoller
                     List<BlockData> newBlocks = blockFetcher.fetchBlockRange(from, latest);
 
                     allBlocks.addAll(newBlocks);
-
-                    System.out.printf("%n[ + ] %d nowy/nowych bloków: %n", newBlocks.size());
+                    Printer.section("[ + ] "+newBlocks.size()+" nowy/nowych bloków: ");
                     System.out.println(newBlocks);
                     List<TransactionData> transactions = transactionFetcher.fetchTransactionsForBlocksWithRetry(newBlocks);
                     transactions.forEach(System.out::println);
@@ -61,7 +61,7 @@ public class BlockPoller
                 }
                 else
                 {
-                    System.out.printf("Brak nowych bloków (ostatni: #%s)%n", latest);
+                    Printer.dim("Brak nowych bloków (ostatni: #"+ latest+")");
                 }
                 Thread.sleep(intervalSeconds * 1000L);
             }
