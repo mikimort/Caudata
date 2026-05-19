@@ -47,7 +47,7 @@ public class TransactionFetcher
             }
             catch (ClientConnectionException e)
             {
-                Printer.warn(String.format("Błąd tranzakcji, (próba %d/3), czekam 1s: %s%n", i + 1, e.getMessage()));
+                Printer.warn(String.format("Błąd transakcji, (próba %d/3), czekam 1s: %s%n", i + 1, e.getMessage()));
                 sleep(1000);
                 continue;
             }
