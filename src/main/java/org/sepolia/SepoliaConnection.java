@@ -17,19 +17,31 @@ public class SepoliaConnection
         web3j = Web3j.build(new HttpService(sepoliaUrl));
     }
 
-    public String getClientVersion() throws IOException
+    public String getClientVersion()
     {
 
-        Web3ClientVersion clientVersion = web3j.web3ClientVersion().send();
-        return clientVersion.getWeb3ClientVersion();
+        try
+        {
+            Web3ClientVersion clientVersion = web3j.web3ClientVersion().send();
+            return clientVersion.getWeb3ClientVersion();
+        }
+        catch (IOException e)
+        {
+            return e.getMessage();
+        }
     }
 
-    public String getLatestBlock() throws IOException
+    public String getLatestBlock()
     {
-
-        EthBlockNumber blockNumber = web3j.ethBlockNumber().send();
-
-        return blockNumber.getBlockNumber().toString();
+        try
+        {
+            EthBlockNumber blockNumber = web3j.ethBlockNumber().send();
+            return blockNumber.getBlockNumber().toString();
+        }
+        catch (IOException e)
+        {
+            return e.getMessage();
+        }
     }
 
     public Web3j getWeb3j()
