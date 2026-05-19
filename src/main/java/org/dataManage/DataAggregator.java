@@ -41,4 +41,7 @@ public class DataAggregator
     }
 
 
+    public double averageTxPerBlockFromCount(int txCount, int blockCount) {
+        return blockCount == 0 ? 0.0 : (double) txCount / blockCount;
+    }
 }
