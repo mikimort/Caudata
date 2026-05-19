@@ -10,7 +10,7 @@ import static org.UI.TerminalUI.*;
 
 /**
  * Centralna klasa pomocnicza do wyświetlania wszystkich komunikatów w terminalu.
- *
+ * <p>
  * Wszystkie metody są statyczne — można je wywoływać bez tworzenia instancji Printer.
  * Każda metoda dodaje spójne stylowanie ANSI, dzięki czemu wygląd aplikacji
  * jest jednolity w całym projekcie.
@@ -55,11 +55,6 @@ public class Printer {
 
     /**
      * Drukuje sekcję podsumowania filtrów dla bloków i transakcji.
-     *
-     * @param filter       instancja DataFilter używana do ponownego zastosowania filtrów
-     * @param allBlocks    pełna lista pobranych bloków
-     * @param activeBlocks bloki które przeszły filtr minimalnej liczby transakcji
-     * @param txs          transakcje pobrane dla najnowszych bloków
      */
     public static void filterSummary(
             DataFilter filter,
@@ -68,7 +63,7 @@ public class Printer {
             List<TransactionData> txs) {
 
         section("Podsumowanie filtrów");
-        field("Bloki z co najmniej 1 tx",activeBlocks.size() + " / " + allBlocks.size());
+        field("Bloki z co najmniej 1 tx", activeBlocks.size() + " / " + allBlocks.size());
         field("Tx >= 0.01 ETH", String.valueOf(filter.filterByMinValue(txs, 0.01).size()));
         field("Tx z gazem <= 100,000", String.valueOf(filter.filterByMaxGas(txs, 100_000).size()));
     }

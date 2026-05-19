@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Obiekt przechowujący zagregowane statystyki
  * dla zestawu bloków i transakcji z sieci Ethereum Sepolia.
- *
+ * <p>
  * Tworzony przez StatsBuilder i przekazywany do warstwy UI
  * Dashboard w celu wyświetlenia.
  */
@@ -41,7 +41,6 @@ public class Stats {
         this.avgGasUsed = avgGasUsed;
         this.latestTransactions = latestTransactions;
     }
-
 
 
     public BigInteger getLatestBlock() {

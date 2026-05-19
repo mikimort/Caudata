@@ -10,11 +10,11 @@ import static org.UI.TerminalUI.*;
 
 /**
  * Główny widok aplikacji wyświetlany w terminalu po zakończeniu pobierania danych.
- *
+ * <p>
  * Dashboard renderuje statystyki sieci Ethereum Sepolia w czytelnym układzie
  * podzielonym na sekcje. Przed renderowaniem czyści ekran, zastępując
  * wcześniejszy postęp pobierania gotowym podsumowaniem.
- *
+ * <p>
  * Dane wejściowe pochodzą z obiektu Stats zbudowanego przez StatsBuilder}
  */
 
@@ -39,21 +39,22 @@ public class Dashboard {
     private void printHeader() {
         String time = LocalTime.now().format(TIME_FMT);
         System.out.println();
-        System.out.println(BOLD + CYAN + "  ⬡  ETH SEPOLIA MONITOR" + RESET + DIM + " " + time + RESET);hr(WIDTH);
+        System.out.println(BOLD + CYAN + "  ⬡  ETH SEPOLIA MONITOR" + RESET + DIM + " " + time + RESET);
+        hr(WIDTH);
     }
 
     private void printOverview(Stats stats) {
         Printer.section("Statystyki zbiorcze");
-        Printer.field("Ostatni blok",       "#" + stats.getLatestBlock(), YELLOW);
-        Printer.field("Przeskanowane bloki",     String.valueOf(stats.getBlocksCount()));
+        Printer.field("Ostatni blok", "#" + stats.getLatestBlock(), YELLOW);
+        Printer.field("Przeskanowane bloki", String.valueOf(stats.getBlocksCount()));
         Printer.field("Łączna liczba tx", String.valueOf(stats.getTransactionsCount()));
-        Printer.field("Śr. tx / blok",     String.format("%.2f", stats.getAvgTxPerBlock()));
+        Printer.field("Śr. tx / blok", String.format("%.2f", stats.getAvgTxPerBlock()));
     }
 
     private void printGasStats(Stats stats) {
         Printer.section("Statystyki ekonomi");
         Printer.field("Łączna wartość (ETH)", String.format("%.6f ETH", stats.getTotalEth()), GREEN);
-        Printer.field("Śr. zużycie gazu",           stats.getAvgGasUsed().toString());
+        Printer.field("Śr. zużycie gazu", stats.getAvgGasUsed().toString());
     }
 
     private void printLatestTransactions(Stats stats) {
@@ -66,18 +67,18 @@ public class Dashboard {
     }
 
     private void printTxRow(TransactionData tx) {
-        String hash  = abbreviate(tx.getTxHash(), 18);
-        String from  = abbreviate(tx.getFrom(), 14);
-        String to    = tx.getTo() != null ? abbreviate(tx.getTo(), 14) : color(DIM, "(tworzenie kontraktu)");
+        String hash = abbreviate(tx.getTxHash(), 18);
+        String from = abbreviate(tx.getFrom(), 14);
+        String to = tx.getTo() != null ? abbreviate(tx.getTo(), 14) : color(DIM, "(tworzenie kontraktu)");
         String value = String.format("%.5f ETH", tx.getValueEth());
-        String gas   = tx.getGasUsed().toString();
+        String gas = tx.getGasUsed().toString();
 
         System.out.println();
         System.out.printf("  %s%s%s%n", CYAN, hash, RESET);
         System.out.printf("    %sod%s %-18s %sdo%s %s%n",
                 DIM, RESET, from, DIM, RESET, to);
         System.out.printf("    %s%-20s%s  gaz: %s%s%s%n",
-                GREEN + BOLD, value, RESET, DIM, gas, RESET);
+                GREEN + BOLD, value, RESET, YELLOW, gas, RESET);
 
         hr(WIDTH);
     }
